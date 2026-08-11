@@ -3,8 +3,8 @@
 
     let noteContent = $state("");
     let noteTitle = $state("");
-    let saveText = $state("Save");
-    let isSaving = $state(false);
+    let saveText = $state("Save"); // Current text displayed on the save button
+    let isSaving = $state(false); // State of the saving operation
 
     async function handleSave() {
         if (!noteTitle.trim() || isSaving) return;
@@ -12,17 +12,17 @@
         isSaving = true;
         saveText = "Saving..."
 
-        try {
-            await invoke("save_note", {
+        try { // Attempt to save the note to the disk
+            await invoke("save_note", { // Invoke backend command, passing the note's title and contents
                 name: noteTitle,
                 contents: noteContent,
             });
 
             saveText = "Success!"
-        } catch {
-            saveText = "Error!";
+        } catch { // Run on error
+            saveText = "Error!"; 
         } finally {
-            setTimeout(() => {
+            setTimeout(() => { // Reset status text back to normal after 1.5s 
                 saveText = "Save";
                 isSaving = false;
             }, 1500);
