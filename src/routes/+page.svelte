@@ -3,14 +3,30 @@
 
     let noteContent = $state("");
     let noteTitle = $state("");
+    let saveText = $state("Save");
+    let isSaving = $state(false);
 
     async function handleSave() {
-        if (!noteTitle.trim()) return;
+        if (!noteTitle.trim() || isSaving) return;
 
-        await invoke("save_note", {
-            name: noteTitle,
-            contents: noteContent,
-        });
+        isSaving = true;
+        saveText = "Saving..."
+
+        try {
+            await invoke("save_note", {
+                name: noteTitle,
+                contents: noteContent,
+            });
+
+            saveText = "Success!"
+        } catch {
+            saveText = "Error!";
+        } finally {
+            setTimeout(() => {
+                saveText = "Save";
+                isSaving = false;
+            }, 1500);
+        }
     }
 </script>
 
@@ -26,7 +42,7 @@
             placeholder="Note title..."
             class="title-input"
         />
-        <button onclick={handleSave} class="save-btn">Save</button>
+        <button onclick={handleSave} class="save-btn">{saveText}</button>
     </div>
 
     <textarea
