@@ -2,6 +2,7 @@
     import { invoke } from "@tauri-apps/api/core";
     import { onMount } from "svelte";
     import SvelteMarkdown from "@humanspeak/svelte-markdown";
+    import { Trash2Icon } from "@lucide/svelte";
 
     let saveTimer: ReturnType<typeof setTimeout> | undefined;
     let noteContent = $state("");
@@ -100,7 +101,6 @@
 </script>
 
 <aside class="sidebar">
-    <h3 id="sidebar-heading">Notes</h3>
     <div class="notes-list">
     {#each notes as note}
       <div class="note-item">
@@ -115,7 +115,7 @@
         onclick={() => handleDelete(note)}
         aria-label="Delete note"
         >
-        X
+        <Trash2Icon />
         </button>
       </div>
     {:else}
@@ -201,11 +201,15 @@
     }
 
     .delete-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         background: #252525;
         color: #888;
         border: 1px solid #444;
         border-radius: 4px;
-        padding: 0 10px;
+        padding: 8px;
+        line-height: 0;
         cursor: pointer;
         transition: background 0.15s ease, color 0.15s ease;
     }
