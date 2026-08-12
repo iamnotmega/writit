@@ -4,6 +4,8 @@
 
     let noteContent = $state("");
     let noteTitle = $state("");
+    let activeNote = $state(""); // The note currently selected
+
     let saveText = $state("Save"); // Current text displayed on the save button
     let isSaving = $state(false); // State of the saving operation
 
@@ -15,6 +17,23 @@
             notes = await invoke("get_notes"); // Invoke backend command    
         } catch (err) { // Print to console on error
             console.error("Failed to fetch notes:", err);
+        }
+    }
+
+    // Handle note selection
+    async function selectNote(name: string) {
+        try {
+        // Fetch note contents using backend
+        const contents = await invoke<string>("read_note", { name });
+
+        // Replace editor contents with loaded note
+        noteTitle = name;
+        noteContent = contents;
+
+        // Set the note as the current selected note
+        activeNote = name;
+        } catch (err) { // Print to console on error
+            console.error("Failed to read note:", err);
         }
     }
 
@@ -54,7 +73,8 @@
     <div class="notes-list">
     {#each notes as note}
       <button 
-        class="note-btn"
+        class="note-btn {activeNote === note? "active" : ''}"
+        onclick={() => selectNote(note)}
       >
         {note}
       </button>
@@ -121,7 +141,8 @@
         transition: background 0.15s ease, border-color 0.15s ease;
     }
 
-    .note-btn:hover {
+    .note-btn:hover,
+    .note-btn:active {
         background: #4a4a4a;
         color: white;
     }

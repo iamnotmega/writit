@@ -53,3 +53,16 @@ pub fn get_notes() -> Result<Vec<String>, String> {
     // Return list of notes
     Ok(notes)
 }
+
+#[tauri::command]
+pub fn read_note(name: String) -> Result<String, String> {
+    // Construct notes directory
+    let home = home_dir().ok_or("Could not find home directory")?;
+    let notes_dir = home.join(".writit");
+
+    // Build full file path
+    let file_path = notes_dir.join(format!("{}.md", name));
+
+    // Read the file and return its contents
+    fs::read_to_string(file_path).map_err(|e| e.to_string())
+}
