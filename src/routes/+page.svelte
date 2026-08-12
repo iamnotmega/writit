@@ -1,11 +1,24 @@
 <script lang="ts">
-    import { invoke } from "@tauri-apps/api/core"
+    import { invoke } from "@tauri-apps/api/core";
+    import { onMount } from "svelte";
 
     let noteContent = $state("");
     let noteTitle = $state("");
     let saveText = $state("Save"); // Current text displayed on the save button
     let isSaving = $state(false); // State of the saving operation
 
+    let notes = $state<string[]>([]); // List of saved notes
+
+    // Attempt to load the list of notes
+    async function loadNotes() {
+        try {
+            notes = await invoke("get_notes"); // Invoke backend command    
+        } catch (err) { // Print to console on error
+            console.error("Failed to fetch notes:", err);
+        }
+    }
+
+    // Handle saving notes
     async function handleSave() {
         if (!noteTitle.trim() || isSaving) return;
 
@@ -19,6 +32,7 @@
             });
 
             saveText = "Success!"
+            await loadNotes(); // Refresh the list of notes after saving a new note
         } catch { // Run on error
             saveText = "Error!"; 
         } finally {
@@ -28,10 +42,26 @@
             }, 1500);
         }
     }
+
+    // Load the list of notes on startup
+    onMount(() => {
+        loadNotes();
+    });
 </script>
 
 <aside class="sidebar">
     <h3 id="sidebar-heading">Notes</h3>
+    <div class="notes-list">
+    {#each notes as note}
+      <button 
+        class="note-btn"
+      >
+        {note}
+      </button>
+    {:else}
+      <p class="empty">No notes yet...</p>
+    {/each}
+  </div>
 </aside>
 
 <main class="editor-container">
@@ -68,6 +98,38 @@
         position: fixed;
         top: 0;
         left: 0;
+    }
+
+    .notes-list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding-top: 8px;
+    }
+
+    .note-btn {
+        width: 240px;
+        padding: 8px 12px;
+        background: #252525;
+        color: #e0e0e0;
+        border: 1px solid #444;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        text-align: left;
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .note-btn:hover {
+        background: #4a4a4a;
+        color: white;
+    }
+
+    .empty {
+        color: #888;
+        font-size: 0.85rem;
+        padding-left: 12px;
     }
 
     .editor-container {
