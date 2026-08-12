@@ -55,6 +55,24 @@ pub fn get_notes() -> Result<Vec<String>, String> {
 }
 
 #[tauri::command]
+pub fn delete_note(name: String) -> Result<(), String> {
+    // Construct notes directory
+    let home = home_dir().ok_or("Could not find home directory")?;
+    let notes_dir = home.join(".writit");
+
+    // Add file extension
+    let filename = format!("{}.md", name);
+
+    // Build full path to the note file
+    let file_path = notes_dir.join(filename);
+
+    // Delete the note from the disk
+    fs::remove_file(file_path).map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
 pub fn read_note(name: String) -> Result<String, String> {
     // Construct notes directory
     let home = home_dir().ok_or("Could not find home directory")?;

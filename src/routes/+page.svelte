@@ -62,6 +62,32 @@
         }
     }
 
+    // Handle deleting notes
+    async function handleDelete(name: string) {
+        if (!name || !name.trim()) return;
+
+        // Attempt to delete the note from disk
+        try {
+            // Invoke backend command to delete the note
+            await invoke("delete_note", { name });
+
+            // Remove file extension
+            const clean = (str:string) => str.replace(/\.md$/, "");
+
+            // Clear editor if current note was deleted
+            if (clean(activeNote) === clean(name) || clean(noteTitle) === clean(name)) {
+                noteTitle = "";
+                noteContent = "";
+                activeNote = "";
+            }
+
+            // Refresh note list
+            await loadNotes();
+        } catch (err) { // Print to console on error
+            console.error("Failed to delete note:", err)
+        }
+    }
+
     // Load the list of notes on startup
     onMount(() => {
         loadNotes();
@@ -72,12 +98,21 @@
     <h3 id="sidebar-heading">Notes</h3>
     <div class="notes-list">
     {#each notes as note}
-      <button 
+      <div class="note-item">
+        <button 
         class="note-btn {activeNote === note? "active" : ''}"
         onclick={() => selectNote(note)}
       >
         {note}
       </button>
+      <button
+        class="delete-btn"
+        onclick={() => handleDelete(note)}
+        aria-label="Delete note"
+        >
+        X
+        </button>
+      </div>
     {:else}
       <p class="empty">No notes yet...</p>
     {/each}
@@ -128,8 +163,14 @@
         padding-top: 8px;
     }
 
-    .note-btn {
+    .note-item {
+        display: flex;
         width: 240px;
+        gap: 4px;
+    }
+
+    .note-btn {
+        flex: 1;
         padding: 8px 12px;
         background: #252525;
         color: #e0e0e0;
@@ -139,12 +180,32 @@
         text-align: left;
         cursor: pointer;
         transition: background 0.15s ease, border-color 0.15s ease;
+        /* Truncate long titles with ellipsis */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .note-btn:hover,
     .note-btn:active {
         background: #4a4a4a;
         color: white;
+    }
+
+    .delete-btn {
+        background: #252525;
+        color: #888;
+        border: 1px solid #444;
+        border-radius: 4px;
+        padding: 0 10px;
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .delete-btn:hover {
+        background: #8b0000;
+        color: white;
+        border-color: #a00000;
     }
 
     .empty {
