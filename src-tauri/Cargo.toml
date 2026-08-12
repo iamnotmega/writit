@@ -1,6 +1,6 @@
 [package]
 name = "writit"
-version = "0.1.0-beta"
+version = "0.2.0-beta"
 description = "Fast, free and open-source notes"
 authors = ["iamnotmega"]
 edition = "2021"
