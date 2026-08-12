@@ -1,6 +1,7 @@
 <script lang="ts">
     import { invoke } from "@tauri-apps/api/core";
     import { onMount } from "svelte";
+    import SvelteMarkdown from "@humanspeak/svelte-markdown";
 
     let noteContent = $state("");
     let noteTitle = $state("");
@@ -135,6 +136,10 @@
         class="note-input"
         placeholder="Write a note..."
     ></textarea>
+
+    <div class="preview">
+        <SvelteMarkdown source={noteContent} />
+    </div>
 </main>
 
 <style>
@@ -219,14 +224,18 @@
         width: calc(100% - 260px);
         height: 100vh;
         display: flex;
-        flex-direction: column;
+        flex-wrap: wrap;
+        align-content: flex-start;
     }
 
     .toolbar {
+        width: 100%;
+        height: 50px;
         display: flex;
         gap: 8px;
         padding: 12px 16px;
         background-color: #252525;
+        box-sizing: border-box;
     }
 
     .title-input {
@@ -252,16 +261,31 @@
         background: #5a5a5a;
     }
 
+    .note-input,
+    .preview {
+        width: 50%;
+        height: calc(100vh - 50px);
+        box-sizing: border-box;
+        overflow-y: auto;
+    }
+
     .note-input {
         flex: 1;
         background-color: #1e1e1e;
         color: white;
         outline: none;
         border: none;
+        border-right: 1px solid #444;
         resize: none;
         padding: 16px;
         font-family: inherit;
         font-size: 1rem;
+    }
+
+    .preview {
+        background-color: #1e1e1e;
+        padding: 16px;
+        color: white;
     }
 
     #sidebar-heading {
