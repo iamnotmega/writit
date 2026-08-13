@@ -10,6 +10,58 @@
     let activeNote = $state(""); // The note currently selected
     let notes = $state<string[]>([]); // List of saved notes
 
+    let historyTimer: ReturnType<typeof setTimeout> | undefined;    
+    let undoStack = $state<string[]>([]);
+    let redoStack = $state<string[]>([]);
+
+    function saveHistory() {
+        // Only save if the content actually changed
+        if (noteContent !== undoStack[undoStack.length -1]) {
+            undoStack.push(noteContent); // Push current note content to undo history so it can be reverted
+            redoStack = []; // Clear redo history
+        }
+    }
+
+    // Handle undo operation
+    function undo() {
+        clearTimeout(historyTimer); // Cancel pending history timer
+        saveHistory(); // Save current state immediately
+
+        if (undoStack.length <= 0) return; // Need atleast 2 states for undo
+
+        redoStack.push(undoStack.pop()!); // Move current state to redo stack
+        noteContent = undoStack[undoStack.length -1]!; // Load previous note state
+    }
+
+    // Handle redo operation
+    function redo() {
+        if (redoStack.length === 0) return; // Stop the function if there is nothing to redo
+
+        const nextState = redoStack.pop()!; // Get most recent undone note content
+        undoStack.push(nextState); // Move back to undo history so it can be undone again
+        noteContent = nextState; // Replace current note content with most recent undo
+    }
+
+    // Function to handle keyboard input for keybinds
+    function handleKeydown(event: KeyboardEvent) { // Function receives a keyboard event
+        const modifier = event.ctrlKey || event.metaKey;
+
+        if (modifier && event.key === "z" && !event.shiftKey) { // Run if Ctrl/Cmd + Z was pressed
+            event.preventDefault(); // Prevent browser native function from interfering
+            undo(); // Execute the undo operation
+        }
+
+        if (modifier && event.key === "z" && event.shiftKey) { // Run if Ctrl/Cmd + Shift + Z was pressed
+            event.preventDefault();
+            redo(); // Execute the redo operation
+        }
+
+        if (modifier && event.key === "y") { // Run if Ctrl/Cmd + Y was pressed
+            event.preventDefault();
+            redo();
+        }
+    }
+
     // Attempt to load the list of notes
     async function loadNotes() {
         try {
@@ -21,10 +73,18 @@
 
     // Function to automatically save notes
     function handleInput() {
+        // Clear history timer if the user is still typing
+        clearTimeout(historyTimer);
+
+        // Wait after last keystroke before saving to history
+        historyTimer = setTimeout(() => {
+            saveHistory();
+        }, 500);
+
         // Clear previous timer if the user is still actively typing
         clearTimeout(saveTimer);
 
-        // Otherwise wait a second after last keystroke before saving the note
+        // Otherwise wait after last keystroke before saving the note
         saveTimer = setTimeout(() => {
             handleSave();
         }, 300);
@@ -38,6 +98,10 @@
         activeNote = "";
         noteTitle = "Untitled";
         noteContent = "";
+
+        // Clear note history
+        undoStack = [];
+        redoStack = [];
     }
 
 
@@ -53,6 +117,10 @@
 
         // Set the note as the current selected note
         activeNote = name;
+
+        // Clear note history
+        undoStack = [];
+        redoStack = [];
         } catch (err) { // Print to console on error
             console.error("Failed to read note:", err);
         }
@@ -157,6 +225,7 @@
     <textarea
         bind:value={noteContent}
         oninput={handleInput}
+        onkeydown={handleKeydown}
         class="note-input"
     ></textarea>
 
