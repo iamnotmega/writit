@@ -281,8 +281,4 @@
         padding: 16px;
         color: white;
     }
-
-    #sidebar-heading {
-        padding-left: 8px; 
-    }
 </style>
