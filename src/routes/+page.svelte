@@ -161,7 +161,7 @@
     ></textarea>
 
     <div class="preview">
-        <SvelteMarkdown source={noteContent} />
+        <SvelteMarkdown source={noteContent} options={{ breaks: true }} />
     </div>
 </main>
 
