@@ -2,7 +2,7 @@
     import { invoke } from "@tauri-apps/api/core";
     import { onMount } from "svelte";
     import SvelteMarkdown from "@humanspeak/svelte-markdown";
-    import { Trash2Icon } from "@lucide/svelte";
+    import { Trash2Icon, SquarePenIcon } from "@lucide/svelte";
 
     let saveTimer: ReturnType<typeof setTimeout> | undefined;
     let noteContent = $state("");
@@ -19,21 +19,27 @@
         }
     }
 
+    // Function to automatically save notes
     function handleInput() {
         // Clear previous timer if the user is still actively typing
         clearTimeout(saveTimer);
-
-        // If it's a new note that has not been saved yet, save immediately
-        if (!activeNote) {
-            handleSave();
-            return;
-        }
 
         // Otherwise wait a second after last keystroke before saving the note
         saveTimer = setTimeout(() => {
             handleSave();
         }, 300);
     }
+
+    // Handle note creation
+    function createNewNote() {
+        clearTimeout(saveTimer); // Clear save timer
+
+        // Reset note content and title
+        activeNote = "";
+        noteTitle = "Untitled";
+        noteContent = "";
+    }
+
 
     // Handle note selection
     async function selectNote(name: string) {
@@ -57,11 +63,18 @@
         const title = noteTitle.trim() || "Untitled"
 
         try { // Attempt to save the note to the disk
+
+            // If the current note's title changed, rename the file
+            if (activeNote && activeNote !== title) {
+                await invoke("delete_note", { name: activeNote });
+            }
+
             await invoke("save_note", { // Invoke backend command, passing the note's title and contents
                 name: title,
                 contents: noteContent,
             });
 
+            activeNote = title; // Set active note
             await loadNotes(); // Refresh the list of notes after saving a new note
         } catch (err) { // Run on error
             console.log("Failed to save note:", err);
@@ -101,6 +114,13 @@
 </script>
 
 <aside class="sidebar">
+    <button
+        class="new-btn"
+        aria-label="New note"
+        onclick={() => createNewNote()}
+        >
+        <SquarePenIcon />
+        </button>
     <div class="notes-list">
     {#each notes as note}
       <div class="note-item">
@@ -161,6 +181,16 @@
         position: fixed;
         top: 0;
         left: 0;
+    }
+
+    .new-btn {
+        background-color: #353535;
+        border: none;
+        color: white;
+        opacity: 0.5;
+        padding-left: 10px;
+        padding-top: 8px;
+        cursor: pointer;
     }
 
     .notes-list {
