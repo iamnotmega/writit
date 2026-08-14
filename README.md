@@ -5,4 +5,4 @@
   <br/>
 
   <h1>Writit</h1>
-  <h2>Fast, free and open source notes</h2>
+  <b>Fast, free and open source notes</b>
