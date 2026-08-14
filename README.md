@@ -1,8 +1,8 @@
-# Writit
-Fast, free and open-source notes
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/5ea1e7a8-b09d-4b80-a077-3a7764b2f01c" width=1920 height=1080 alt="Writit preview"/>
 
-> [!NOTE]
-> Writit is currently in beta and is **not** ready for use. If you encounter an issue or want to request a feature, please open an issue.
+  <br/>
+  <br/>
 
-> [!IMPORTANT]
-> Currently, Writit is **only packaged** in the Linux AppImage format. Windows and macOS users can compile from source with `npm install && npm run tauri dev`.
+  <h1>Writit</h1>
+  <h2>Fast, free and open source notes</h2>
