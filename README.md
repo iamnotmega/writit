@@ -4,5 +4,19 @@
   <br/>
   <br/>
 
-  <h1>Writit</h1>
-  <b>Fast, free and open source notes</b>
+  # Writit
+  **Fast, free and open source notes**
+</div>
+
+<br/>
+<br/>
+
+Writit is a free and open-source notes app written in Rust using Tauri and SvelteKit.
+
+<br/>
+
+## Why Writit?
+- **Blazingly fast**: Thanks to the incredible performance of Writit's tech stack, you can write notes faster than ever before.
+- **Free & open source**: Writit is completely free of charge and its source code can be read by anyone.
+- **Tiny footprint**: Writit consumes very little RAM while in use and takes up little to no space.
+- **Distraction-free**: Say goodbye to unwanted AI integration and features. Writit is simple by design.
