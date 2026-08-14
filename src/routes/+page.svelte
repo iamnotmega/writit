@@ -285,6 +285,7 @@
     <button
         class="new-btn"
         aria-label="New note"
+        title="New note"
         onclick={() => createNewNote()}
         >
         <SquarePenIcon />
@@ -293,6 +294,7 @@
     <button
         class="new-btn"
         aria-label="New folder"
+        title="New folder"
         onclick={() => createNewFolder()}
     >
         <FolderPlusIcon />
@@ -308,6 +310,7 @@
                         class="folder-new-btn"
                         onclick={() => createNewNote(folder)}
                         aria-label={`New note in ${folder}`}
+                        title={`New note in ${folder}`}
                     >
                         <SquarePenIcon />
                     </button>
@@ -316,6 +319,7 @@
                         class="folder-delete-btn"
                         onclick={() => handleDeleteFolder(folder)}
                         aria-label={`Delete ${folder} folder`}
+                        title={`Delete ${folder} folder`}
                     >
                         <Trash2Icon />
                     </button>
@@ -335,6 +339,7 @@
                                 class="delete-btn"
                                 onclick={() => handleDelete(note)}
                                 aria-label="Delete note"
+                                title="Delete note"
                             >
                                 <Trash2Icon />
                             </button>
@@ -358,6 +363,7 @@
                     class="delete-btn"
                     onclick={() => handleDelete(note)}
                     aria-label="Delete note"
+                    title="Delete note"
                 >
                     <Trash2Icon />
                 </button>
