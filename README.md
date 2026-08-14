@@ -85,3 +85,6 @@ npm run tauri build
 Your built binary will be located in `src-tauri/target/release` or `src-tauri/target/release/bundles/` depending on your operating system. You can then run your compiled binary by following the platform-specific instructions for your operating system listed above.
 
 Alternatively, if you wish to run the app immediately after its built, run `npm run tauri dev` instead. Please note that this is **not meant for production** and should be used only by developers.
+
+## License
+Writit is licensed under the [GPL-3.0](LICENSE) license.
