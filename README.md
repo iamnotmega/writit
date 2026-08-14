@@ -11,7 +11,7 @@
 <br/>
 <br/>
 
-Writit is a free and open-source notes app written in Rust using Tauri and SvelteKit.
+Writit is a free and open-source notes app written in Rust using [Tauri](https://v2.tauri.app) and [SvelteKit](https://svelte.dev/docs/kit/introduction).
 
 <br/>
 
