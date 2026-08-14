@@ -2,13 +2,15 @@
     import { invoke } from "@tauri-apps/api/core";
     import { onMount } from "svelte";
     import SvelteMarkdown from "@humanspeak/svelte-markdown";
-    import { Trash2Icon, SquarePenIcon } from "@lucide/svelte";
+    import { Trash2Icon, SquarePenIcon, FolderPlusIcon } from "@lucide/svelte";
 
     let saveTimer: ReturnType<typeof setTimeout> | undefined;
     let noteContent = $state("");
     let noteTitle = $state("Untitled");
     let activeNote = $state(""); // The note currently selected
     let notes = $state<string[]>([]); // List of saved notes
+    let folders = $state<string[]>([]); // List of saved folders
+    let selectedFolder = $state(""); // Folder where a new note will be created
 
     let historyTimer: ReturnType<typeof setTimeout> | undefined;    
     let undoStack = $state<string[]>([]);
@@ -42,6 +44,40 @@
         noteContent = nextState; // Replace current note content with most recent undo
     }
 
+    // Separate note name from folder name
+    function splitNotePath(notePath: string) {
+        // Position of the last / in the note path
+        const separatorIndex = notePath.lastIndexOf("/");
+
+        if (separatorIndex === -1) { // Runs if note is not in a folder
+            return {
+                folder: "", // Return no folder
+                name: notePath // Return the note's name
+            };
+        }
+
+        return { // Runs if note is in a folder
+            folder: notePath.slice(0, separatorIndex), // Return the folder name, skipping the / after it
+            name: notePath.slice(separatorIndex + 1) // Return the note's name 1 character after the /
+        }
+    }
+
+    // Get the notes that are inside a folder
+    function getNotesInFolder(folder: string) {
+        return notes.filter((note) => {
+            const { folder: noteFolder } = splitNotePath(note); // Split note and folder names
+            return noteFolder === folder; // Return true if the note belongs to the folder
+        });
+    }
+
+    // Get the notes that are not inside a folder
+    function getRootNotes() {
+        return notes.filter((note) => {
+            const { folder } = splitNotePath(note);
+            return folder === "";
+        });
+    }
+
     // Function to handle keyboard input for keybinds
     function handleKeydown(event: KeyboardEvent) { // Function receives a keyboard event
         const modifier = event.ctrlKey || event.metaKey;
@@ -71,6 +107,15 @@
         }
     }
 
+    // Attempt to load the list of folders
+    async function loadFolders() {
+        try {
+            folders = await invoke("get_folders"); // Invoke backend command
+        } catch (err) { // Print to console on error
+            console.error("Failed to fetch notes:", err);
+        }
+    }
+
     // Function to automatically save notes
     function handleInput() {
         // Clear history timer if the user is still typing
@@ -91,7 +136,7 @@
     }
 
     // Handle note creation
-    function createNewNote() {
+    function createNewNote(folder: string = "") {
         clearTimeout(saveTimer); // Clear save timer
 
         // Reset note content and title
@@ -99,9 +144,33 @@
         noteTitle = "Untitled";
         noteContent = "";
 
+        // Remember which folder the note should be saved into
+        selectedFolder = folder;
+
         // Clear note history
         undoStack = [];
         redoStack = [];
+    }
+
+    // Handle folder creation
+    async function createNewFolder() {
+        // Prompt the user for a folder name
+        const name = prompt("Folder name:");
+
+        // Stop if the name is empty
+        if (!name || !name.trim()) return;
+
+        // Attempt to create the folder
+        try {
+            await invoke("create_folder", {
+                name: name.trim(),
+            });
+
+            // Refresh the list of folders
+            loadFolders();
+        } catch (err) {
+            console.error("Failed to create folder:", err);
+        }
     }
 
 
@@ -111,11 +180,10 @@
         // Fetch note contents using backend
         const contents = await invoke<string>("read_note", { name });
 
-        // Replace editor contents with loaded note
-        noteTitle = name;
-        noteContent = contents;
+        const { name: noteName } = splitNotePath(name);
 
-        // Set the note as the current selected note
+        noteTitle = noteName;
+        noteContent = contents;
         activeNote = name;
 
         // Clear note history
@@ -131,18 +199,28 @@
         const title = noteTitle.trim() || "Untitled"
 
         try { // Attempt to save the note to the disk
+            // Use the existing note's folder, or the selected folder for a new note
+            const folder = activeNote
+                ? splitNotePath(activeNote).folder
+                : selectedFolder;
 
             // If the current note's title changed, rename the file
-            if (activeNote && activeNote !== title) {
-                await invoke("delete_note", { name: activeNote });
+            if (activeNote) {
+                const { name: activeName } = splitNotePath(activeNote);
+
+                if (activeName !== title) {
+                    await invoke("delete_note", { name: activeNote });
+                }
             }
 
-            await invoke("save_note", { // Invoke backend command, passing the note's title and contents
+            await invoke("save_note", { // Invoke backend command, passing the note's title, contents and folder
                 name: title,
                 contents: noteContent,
+                folder,
             });
 
-            activeNote = title; // Set active note
+            activeNote = folder ? `${folder}/${title}` : title; // Set active note as the full file path
+            selectedFolder = "";
             await loadNotes(); // Refresh the list of notes after saving a new note
         } catch (err) { // Run on error
             console.log("Failed to save note:", err);
@@ -158,14 +236,13 @@
             // Invoke backend command to delete the note
             await invoke("delete_note", { name });
 
-            // Remove file extension
-            const clean = (str:string) => str.replace(/\.md$/, "");
-
-            // Clear editor if current note was deleted
-            if (clean(activeNote) === clean(name) || clean(noteTitle) === clean(name)) {
+            // Reset note title and contents if the deleted note was the current note
+            if (activeNote === name) {
                 noteTitle = "Untitled";
                 noteContent = "";
                 activeNote = "";
+                undoStack = [];
+                redoStack = [];
             }
 
             // Refresh note list
@@ -175,9 +252,32 @@
         }
     }
 
-    // Load the list of notes on startup
+    // Handle deleting folders
+    async function handleDeleteFolder(name: string) {
+        // Ask the user to confirm before deleting the folder
+        const confirmation = prompt(
+            `Type "${name}" to confirm deleting this folder and all notes inside it. Please note that this operation cannot be undone.`
+        );
+
+        // Stop if the user cancelled or typed the wrong name
+        if (confirmation !== name) return;
+
+        // Attempt to delete the folder
+        try {
+            await invoke("delete_folder", { name });
+
+            // Refresh note and folder lists since deleting a folder also deletes the notes inside of it
+            await loadFolders();
+            await loadNotes();
+        } catch (err) {
+            console.error("Failed to delete folder:", err);
+        }
+    }
+
+    // Load the list of notes and folders on startup
     onMount(() => {
         loadNotes();
+        loadFolders();
     });
 </script>
 
@@ -189,26 +289,85 @@
         >
         <SquarePenIcon />
         </button>
+
+    <button
+        class="new-btn"
+        aria-label="New folder"
+        onclick={() => createNewFolder()}
+    >
+        <FolderPlusIcon />
+    </button>
     <div class="notes-list">
-    {#each notes as note}
-      <div class="note-item">
-        <button 
-        class="note-btn {activeNote === note? "active" : ''}"
-        onclick={() => selectNote(note)}
-      >
-        {note}
-      </button>
-      <button
-        class="delete-btn"
-        onclick={() => handleDelete(note)}
-        aria-label="Delete note"
-        >
-        <Trash2Icon />
-        </button>
-      </div>
-    {:else}
-      <p class="empty">No notes yet...</p>
-    {/each}
+        <!-- Folders -->
+        {#each folders as folder}
+            <div class="folder">
+                <div class="folder-header">
+                    <span class="folder-name">{folder}</span>
+
+                    <button
+                        class="folder-new-btn"
+                        onclick={() => createNewNote(folder)}
+                        aria-label={`New note in ${folder}`}
+                    >
+                        <SquarePenIcon />
+                    </button>
+
+                    <button
+                        class="folder-delete-btn"
+                        onclick={() => handleDeleteFolder(folder)}
+                        aria-label={`Delete ${folder} folder`}
+                    >
+                        <Trash2Icon />
+                    </button>
+                </div>
+
+                <div class="folder-notes">
+                    {#each getNotesInFolder(folder) as note}
+                        <div class="note-item">
+                            <button
+                                class="note-btn {activeNote === note ? 'active' : ''}"
+                                onclick={() => selectNote(note)}
+                            >
+                                {splitNotePath(note).name}
+                            </button>
+
+                            <button
+                                class="delete-btn"
+                                onclick={() => handleDelete(note)}
+                                aria-label="Delete note"
+                            >
+                                <Trash2Icon />
+                            </button>
+                        </div>
+                    {/each}
+                </div>
+            </div>
+        {/each}
+        
+        <!-- Notes not belonging to a folder -->
+        {#each getRootNotes() as note}
+            <div class="note-item">
+                <button
+                    class="note-btn {activeNote === note ? 'active' : ''}"
+                    onclick={() => selectNote(note)}
+                >
+                    {note}
+                </button>
+
+                <button
+                    class="delete-btn"
+                    onclick={() => handleDelete(note)}
+                    aria-label="Delete note"
+                >
+                    <Trash2Icon />
+                </button>
+            </div>
+        {/each}
+        
+        <!-- Empty state with no notes or folders -->
+        {#if folders.length === 0 && getRootNotes().length === 0}
+            <p class="empty">No notes yet...</p>
+        {/if}
   </div>
 </aside>
 
@@ -379,5 +538,70 @@
         background-color: #1e1e1e;
         padding: 16px;
         color: white;
+    }
+
+    .folder {
+        width: 240px;
+        margin-bottom: 4px;
+    }
+
+    .folder-header {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 4px 4px 4px 8px;
+        box-sizing: border-box;
+    }
+
+    .folder-name {
+        flex: 1;
+        color: #aaa;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    .folder-delete-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        padding: 4px;
+        background: transparent;
+        color: #666;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .folder-delete-btn:hover {
+        background: #8b0000;
+        color: white;
+    }
+
+    .folder-new-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        padding: 4px;
+        background: transparent;
+        color: #666;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .folder-new-btn:hover {
+        background: #4a4a4a;
+        color: white;
+    }
+
+    .folder-notes {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding-left: 8px;
     }
 </style>
