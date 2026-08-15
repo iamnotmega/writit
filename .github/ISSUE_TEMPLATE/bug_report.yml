@@ -1,0 +1,44 @@
+name: Bug Report
+title: '[bug] '
+description: Report a bug within the app
+labels: ['bug']
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before you report a bug, make sure that:
+        1. Your installation of Writit is up to date
+        2. This issue has not been reported already.
+
+  - type: textarea
+    id: description
+    attributes:
+        label: Describe the bug
+        description: A clear description of the bug. Include screenshots if applicable.
+        placeholder: Bug description
+    validations:
+        required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Provide a list of steps to reproduce the issue, as it greatly aids with fixing the issue as quickly as possible.
+      placeholder: Steps to reproduce
+
+  - type: textarea
+    id: version
+    attributes:
+      label: Writit version
+      description: The version of Writit the bug occurred on.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional info
+      description: Any extra information about the problem
+      
