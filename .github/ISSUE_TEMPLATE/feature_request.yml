@@ -1,0 +1,32 @@
+name: Feature Request
+title: '[feature] '
+description: Suggest a new feature
+labels: ['feature']
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before suggesting a new feature, **make sure it has not been requested already.**
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the feature
+      description: A description of the requested feature. Include screenshots if applicable.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: Why?
+      description: Explanation of why this feature should be added.
+    validations:
+      required: true
+  
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional info
+      description: Any extra info about the feature.
