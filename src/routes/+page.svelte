@@ -401,10 +401,7 @@
 
 <style>
     :global(html, body) {
-        background-color: #1e1e1e;
-        color: white;
         overflow: hidden;
-        margin: 0;
     }
 
     .sidebar {
