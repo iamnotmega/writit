@@ -230,25 +230,30 @@
     // Handle deleting notes
     async function handleDelete(name: string) {
         if (!name || !name.trim()) return;
+ 
+        // Ask the user to confirm before deleting the note
+        if (confirm(`Delete note "${name}"?`)) {
+            // Attempt to delete the note from disk
+            try {
+                // Invoke backend command to delete the note
+                await invoke("delete_note", { name });
 
-        // Attempt to delete the note from disk
-        try {
-            // Invoke backend command to delete the note
-            await invoke("delete_note", { name });
+                // Reset note title and contents if the deleted note was the current note
+                if (activeNote === name) {
+                    noteTitle = "Untitled";
+                    noteContent = "";
+                    activeNote = "";
+                    undoStack = [];
+                    redoStack = [];
+                }
 
-            // Reset note title and contents if the deleted note was the current note
-            if (activeNote === name) {
-                noteTitle = "Untitled";
-                noteContent = "";
-                activeNote = "";
-                undoStack = [];
-                redoStack = [];
+                // Refresh note list
+                await loadNotes();
+            } catch (err) { // Print to console on error
+                console.error("Failed to delete note:", err)
             }
-
-            // Refresh note list
-            await loadNotes();
-        } catch (err) { // Print to console on error
-            console.error("Failed to delete note:", err)
+        } else {
+            return; // Abort deletion
         }
     }
 
