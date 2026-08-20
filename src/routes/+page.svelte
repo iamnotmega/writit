@@ -2,7 +2,7 @@
     import { invoke } from "@tauri-apps/api/core";
     import { onMount } from "svelte";
     import SvelteMarkdown from "@humanspeak/svelte-markdown";
-    import { Trash2Icon, SquarePenIcon, FolderPlusIcon } from "@lucide/svelte";
+    import { Trash2Icon, SquarePenIcon, FolderPlusIcon, SettingsIcon } from "@lucide/svelte";
 
     let saveTimer: ReturnType<typeof setTimeout> | undefined;
     let noteContent = $state("");
@@ -12,7 +12,7 @@
     let folders = $state<string[]>([]); // List of saved folders
     let selectedFolder = $state(""); // Folder where a new note will be created
 
-    let historyTimer: ReturnType<typeof setTimeout> | undefined;    
+    let historyTimer: ReturnType<typeof setTimeout> | undefined;
     let undoStack = $state<string[]>([]);
     let redoStack = $state<string[]>([]);
 
@@ -101,7 +101,7 @@
     // Attempt to load the list of notes
     async function loadNotes() {
         try {
-            notes = await invoke("get_notes"); // Invoke backend command    
+            notes = await invoke("get_notes"); // Invoke backend command
         } catch (err) { // Print to console on error
             console.error("Failed to fetch notes:", err);
         }
@@ -230,7 +230,7 @@
     // Handle deleting notes
     async function handleDelete(name: string) {
         if (!name || !name.trim()) return;
- 
+
         // Ask the user to confirm before deleting the note
         if (confirm(`Delete note "${name}"?`)) {
             // Attempt to delete the note from disk
@@ -353,7 +353,7 @@
                 </div>
             </div>
         {/each}
-        
+
         <!-- Notes not belonging to a folder -->
         {#each getRootNotes() as note}
             <div class="note-item">
@@ -374,12 +374,21 @@
                 </button>
             </div>
         {/each}
-        
+
         <!-- Empty state with no notes or folders -->
         {#if folders.length === 0 && getRootNotes().length === 0}
             <p class="empty">No notes yet...</p>
         {/if}
   </div>
+
+  <a
+      href="/settings"
+      class="settings-btn"
+      aria-label="Settings"
+      title="Settings"
+  >
+      <SettingsIcon />
+  </a>
 </aside>
 
 <main class="editor-container">
@@ -484,6 +493,18 @@
         background: #8b0000;
         color: white;
         border-color: #a00000;
+    }
+
+    .settings-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        color: #888;
+        padding: 8px;
+        margin-top: 430px;
+        margin-left: 220px;
     }
 
     .empty {
