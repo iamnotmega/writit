@@ -431,11 +431,15 @@
     .new-btn {
         background-color: #353535;
         border: none;
-        color: white;
-        opacity: 0.5;
+        color: #666;
         padding-left: 10px;
         padding-top: 8px;
         cursor: pointer;
+        transition: color 0.15s ease, color 0.15s ease;
+    }
+
+    .new-btn:hover {
+        color: white;
     }
 
     .notes-list {
@@ -505,6 +509,11 @@
         padding: 8px;
         margin-top: 430px;
         margin-left: 220px;
+        transition: color 0.15s ease, color 0.15s ease;
+    }
+
+    .settings-btn:hover {
+        color: white;
     }
 
     .empty {
@@ -620,11 +629,6 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
-    }
-
-    .folder-new-btn:hover {
-        background: #4a4a4a;
-        color: white;
     }
 
     .folder-notes {
