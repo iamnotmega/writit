@@ -61,7 +61,7 @@ Replace `<binary>` with the location of your downloaded binary.
 
 ### Compiling from source
 > [!NOTE]
-> Make sure you have **Node.js** and **Rust** installed on your machine before compiling from source.
+> Make sure you have Tauri's [prerequisites](https://v2.tauri.app/start/prerequisites/) installed on your machine before proceeding.
 
 If you wish, you can also compile Writit from source:
 
