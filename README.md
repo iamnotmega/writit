@@ -11,7 +11,7 @@
 <br/>
 <br/>
 
-Writit is a free and open-source note-taking application designed to make writing notes easier than ever.
+Writit is a free and open-source application designed to make taking notes easier than ever.
 <br/>
 
 ## Why Writit?
