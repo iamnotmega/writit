@@ -23,7 +23,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "dmg"],
+    "targets": ["nsis", "dmg", "appimage"],
     "macOS": {
       "signingIdentity": "-"
     },
