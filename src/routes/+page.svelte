@@ -508,8 +508,9 @@
         border: none;
         color: #888;
         padding: 8px;
-        margin-top: 430px;
-        margin-left: 220px;
+        position: absolute;
+        top: calc(100vh - 40px);
+        left: 220px;
         transition: color 0.15s ease, color 0.15s ease;
     }
 
