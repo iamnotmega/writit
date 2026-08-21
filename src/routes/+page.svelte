@@ -426,7 +426,10 @@
         position: fixed;
         top: 0;
         left: 0;
-        position: relative;
+    }
+
+    :global(body.light) .sidebar {
+        background-color: #eeeeee;
     }
 
     .new-btn {
@@ -439,8 +442,17 @@
         transition: color 0.15s ease, color 0.15s ease;
     }
 
+    :global(body.light) .new-btn {
+        background-color: #eeeeee;
+        color: #666;
+    }
+
     .new-btn:hover {
         color: white;
+    }
+
+    :global(body.light) .new-btn:hover {
+        color: #222;
     }
 
     .notes-list {
@@ -474,10 +486,22 @@
         text-overflow: ellipsis;
     }
 
+    :global(body.light) .note-btn {
+        background-color: #ffffff;
+        color: #333;
+        border-color: #ccc;
+    }
+
     .note-btn:hover,
     .note-btn:active {
         background: #4a4a4a;
         color: white;
+    }
+
+    :global(body.light) .note-btn:hover,
+    :global(body.light) .note-btn:active {
+        background-color: #e0e0e0;
+        color: #111;
     }
 
     .delete-btn {
@@ -494,7 +518,19 @@
         transition: background 0.15s ease, color 0.15s ease;
     }
 
+    :global(body.light) .delete-btn {
+        background-color: #ffffff;
+        color: #777;
+        border-color: #ccc;
+    }
+
     .delete-btn:hover {
+        background: #8b0000;
+        color: white;
+        border-color: #a00000;
+    }
+
+    :global(body.light) .delete-btn:hover {
         background: #8b0000;
         color: white;
         border-color: #a00000;
@@ -514,14 +550,26 @@
         transition: color 0.15s ease, color 0.15s ease;
     }
 
+    :global(body.light) .settings-btn {
+        color: #777;
+    }
+
     .settings-btn:hover {
         color: white;
+    }
+
+    :global(body.light) .settings-btn:hover {
+        color: #222;
     }
 
     .empty {
         color: #888;
         font-size: 0.85rem;
         padding-left: 12px;
+    }
+
+    :global(body.light) .empty {
+        color: #777;
     }
 
     .editor-container {
@@ -543,6 +591,10 @@
         box-sizing: border-box;
     }
 
+    :global(body.light) .toolbar {
+        background-color: #ffffff;
+    }
+
     .title-input {
         flex: 1;
         background: #1e1e1e;
@@ -551,6 +603,11 @@
         padding: 6px 10px;
         border-radius: 4px;
         outline: none;
+    }
+
+    :global(body.light) .title-input {
+        background: #ffffff;
+        color: black;
     }
 
     .note-input,
@@ -574,10 +631,21 @@
         font-size: 1rem;
     }
 
+    :global(body.light) .note-input {
+        background-color: #ffffff;
+        color: black;
+        border-right-color: #d0d0d0;
+    }
+
     .preview {
         background-color: #1e1e1e;
         padding: 16px;
         color: white;
+    }
+
+    :global(body.light) .preview {
+        background-color: #ffffff;
+        color: black;
     }
 
     .folder {
@@ -600,6 +668,10 @@
         font-weight: bold;
     }
 
+    :global(body.light) .folder-name {
+        color: #666;
+    }
+
     .folder-delete-btn {
         display: inline-flex;
         align-items: center;
@@ -614,8 +686,17 @@
         cursor: pointer;
     }
 
+    :global(body.light) .folder-delete-btn {
+        color: #777;
+    }
+
     .folder-delete-btn:hover {
         background: #8b0000;
+        color: white;
+    }
+
+    :global(body.light) .folder-delete-btn:hover {
+        background-color: #8b0000;
         color: white;
     }
 
@@ -631,6 +712,10 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
+    }
+
+    :global(body.light) .folder-new-btn {
+        color: #777;
     }
 
     .folder-notes {
