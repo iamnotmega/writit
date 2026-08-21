@@ -1,6 +1,6 @@
 [package]
 name = "writit"
-version = "1.0.0"
+version = "1.1.0"
 description = "A lightweight note-taking app written in Rust and Svelte."
 authors = ["iamnotmega"]
 edition = "2021"
