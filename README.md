@@ -60,9 +60,6 @@ You can run it with:
 Replace `<binary>` with the location of your downloaded binary.
 
 ### Compiling from source
-> [!NOTE]
-> Make sure you have Tauri's [prerequisites](https://v2.tauri.app/start/prerequisites/) installed on your machine before proceeding.
-
 If you wish, you can also compile Writit from source:
 
 1. Clone the repository to your local machine:
