@@ -11,8 +11,7 @@
 <br/>
 <br/>
 
-Writit is a free and open-source notes app written in Rust using [Tauri](https://v2.tauri.app) and [SvelteKit](https://svelte.dev/docs/kit/introduction).
-
+Writit is a free and open-source note-taking application designed to make writing notes easier than ever.
 <br/>
 
 ## Why Writit?
