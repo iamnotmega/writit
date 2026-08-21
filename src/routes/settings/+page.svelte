@@ -23,7 +23,7 @@
     <ArrowLeftIcon />
 </a>
 
-<h2 id="category-about">About</h2>
+<h2>About</h2>
 <div class="settings-card">
     <p class="setting-title">Version</p>
     <p>{appVersion}</p>
@@ -47,6 +47,10 @@
         color: #999;
         padding-left: 8px;
         margin: 0;
+    }
+
+    :global(h2) {
+        padding-left: 8px;
     }
 
     .link {
@@ -77,10 +81,6 @@
         margin-bottom: 8px;
         height: fit-content;
         padding: 8px;
-    }
-
-    #category-about {
-        padding-left: 8px;
     }
 
     .back-btn {
