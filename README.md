@@ -5,7 +5,7 @@
   <br/>
 
   # Writit
-  **Fast, free and open source notes**
+  **A lightweight note-taking app written in Rust and Svelte.**
 </div>
 
 <br/>
