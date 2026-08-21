@@ -35,6 +35,9 @@ Download the `.exe` file from the [latest release.](https://github.com/iamnotmeg
 Download the `.dmg` file from the [latest release.](https://github.com/iamnotmega/writit/releases/latest) Once you have downloaded it, open the file. You should see a window with the Writit icon and your Applications folder. To install Writit, drag the icon into the folder. macOS will then copy the contents of the `.dmg` file into the Applications folder. After it has installed, you can now launch the app.
 
 ### Linux
+> [!NOTE]
+> Running Writit on Linux (applies to pre-built binary *and* building from source) **requires** the installation of Tauri's [prerequisites](https://v2.tauri.app/start/prerequisites/).
+
 Download the raw Linux binary from the [latest release.](https://github.com/iamnotmega/writit/releases/latest) Once downloaded, you have to make it executable:
 
 **Method 1:**
